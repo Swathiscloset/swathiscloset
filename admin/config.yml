@@ -2,12 +2,7 @@ backend:
   name: github
   repo: Swathiscloset/swathiscloset
   branch: main
-  commit_messages:
-    create: "Create {{collection}} “{{slug}}”"
-    update: "Update {{collection}} “{{slug}}”"
-    delete: "Delete {{collection}} “{{slug}}”"
-    upload_media: "[skip ci] Upload “{{path}}”"
-    delete_media: "[skip ci] Delete “{{path}}”"
+  base_url: https://decap-cms-oauth.netlify.app
 
 media_folder: "images"
 public_folder: "/images"
