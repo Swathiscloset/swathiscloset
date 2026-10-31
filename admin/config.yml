@@ -2,8 +2,7 @@ backend:
   name: github
   repo: Swathiscloset/swathiscloset
   branch: main
-  base_url: https://api.github.com
-  auth_type: token
+  auth_type: implicit
 
 media_folder: "images"
 public_folder: "/images"
