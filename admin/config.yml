@@ -2,7 +2,12 @@ backend:
   name: github
   repo: Swathiscloset/swathiscloset
   branch: main
-  auth_type: implicit
+  commit_messages:
+    create: "Create {{collection}} “{{slug}}”"
+    update: "Update {{collection}} “{{slug}}”"
+    delete: "Delete {{collection}} “{{slug}}”"
+    upload_media: "[skip ci] Upload “{{path}}”"
+    delete_media: "[skip ci] Delete “{{path}}”"
 
 media_folder: "images"
 public_folder: "/images"
