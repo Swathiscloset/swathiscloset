@@ -44,7 +44,7 @@
         <p>&copy; 2026 Swathi's Closet Store. All rights reserved.</p>
     </footer>
 
-    <!-- Smart CSV Parser Script -->
+    <!-- Bulletproof CSV Parser Script -->
     <script>
         async function loadCatalog() {
             try {
@@ -52,14 +52,11 @@
                 if (!response.ok) throw new Error('Could not load products.csv');
                 const csvText = await response.text();
                 
-                // Split rows and handle quotes safely
                 const lines = csvText.trim().split('\n');
                 if (lines.length < 2) return;
 
-                // Parse header row
                 const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
                 
-                // Helper to find column index by name variants
                 const getColIndex = (names) => {
                     for (let n of names) {
                         const idx = headers.findIndex(h => h.includes(n));
@@ -74,7 +71,9 @@
                 const idxColor = getColIndex(['color']);
                 const idxSizes = getColIndex(['size']);
                 const idxRemarks = getColIndex(['remark']);
-                const idxImage = getColIndex(['image', 'img', 'photo']);
+                // Expanded search terms for image column (checks 'image', 'img', 'photo', 'file', or fallback to last column)
+                let idxImage = getColIndex(['imag', 'photo', 'file', 'pic']);
+                if (idxImage === -1 && headers.length >= 8) idxImage = 7; // default to 8th column if standard template
 
                 const productGrid = document.getElementById('product-grid');
                 productGrid.innerHTML = '';
@@ -83,7 +82,6 @@
                     const line = lines[i].trim();
                     if (!line) continue;
 
-                    // Simple CSV column splitter handling quoted values
                     const cols = [];
                     let current = '';
                     let inQuotes = false;
@@ -99,17 +97,17 @@
                     }
                     cols.push(current.trim().replace(/^"|"$/g, ''));
 
-                    const title = idxTitle !== -1 ? cols[idxTitle] : 'Boutique Wear';
-                    const price = idxPrice !== -1 ? cols[idxPrice] : '0';
-                    const category = idxCategory !== -1 ? cols[idxCategory] : 'Ethnic';
-                    const color = idxColor !== -1 ? cols[idxColor] : 'Standard';
-                    const sizes = idxSizes !== -1 ? cols[idxSizes] : 'Standard';
-                    const remarks = idxRemarks !== -1 ? cols[idxRemarks] : '';
-                    let image = idxImage !== -1 ? cols[idxImage] : '';
+                    const title = idxTitle !== -1 && cols[idxTitle] ? cols[idxTitle] : 'Boutique Wear';
+                    const price = idxPrice !== -1 && cols[idxPrice] ? cols[idxPrice] : '0';
+                    const category = idxCategory !== -1 && cols[idxCategory] ? cols[idxCategory] : 'Ethnic';
+                    const color = idxColor !== -1 && cols[idxColor] ? cols[idxColor] : 'Standard';
+                    const sizes = idxSizes !== -1 && cols[idxSizes] ? cols[idxSizes] : 'Standard';
+                    const remarks = idxRemarks !== -1 && cols[idxRemarks] ? cols[idxRemarks] : '';
+                    let rawImage = idxImage !== -1 && cols[idxImage] ? cols[idxImage] : '';
 
-                    // Clean image filename and ensure it points to images/ folder
-                    image = image.replace(/^images\//, '').trim();
-                    const imagePath = image ? `images/${image}` : '';
+                    // Clean image filename and build correct path
+                    rawImage = rawImage.replace(/^images\//, '').trim();
+                    const imagePath = rawImage ? `images/${rawImage}` : '';
 
                     const card = document.createElement('div');
                     card.className = "bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition flex flex-col justify-between border border-stone-100";
@@ -119,7 +117,7 @@
                             <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-stone-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                                 ${category}
                             </span>
-                            <img src="${imagePath}" alt="${title}" class="w-full h-full object-cover object-top hover:scale-105 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=600'">
+                            <img src="${imagePath}" alt="${title}" class="w-full h-full object-cover object-top hover:scale-105 transition duration-500" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=600'; console.log('Failed to load image:', '${imagePath}');">
                         </div>
                         <div class="p-5 flex flex-col flex-grow justify-between">
                             <div>
@@ -133,7 +131,7 @@
                                     ${remarks ? `<p><strong class="text-stone-700">Remarks:</strong> ${remarks}</p>` : ''}
                                 </div>
                             </div>
-                            <a href="https://wa.me/919999999999?text=Hi,%20I%20am%20interested%20in%20ordering%20${encodeURIComponent(title)}%20(Price:%20₹${price})" target="_blank" class="w-full bg-stone-900 text-white py-2.5 rounded-lg text-center font-medium hover:bg-stone-800 transition block text-sm">
+                            <a href="https://wa.me/919999999999?text=Hi,%20I%20am%20interested%20in%20ordering%20${encodeURIComponent(title)}%20(Price:%2520₹${price})" target="_blank" class="w-full bg-stone-900 text-white py-2.5 rounded-lg text-center font-medium hover:bg-stone-800 transition block text-sm">
                                 Order via WhatsApp
                             </a>
                         </div>
