@@ -1,22 +1,19 @@
 <!doctype html>
-<html>
+html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Manager</title>
+  <title>Swathi's Closet - Admin Dashboard</title>
+  <!-- Include CMS styles -->
+  <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css" />
 </head>
 <body>
+  <!-- Include Decap CMS script -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.reload();
-          });
-        }
-      });
-    }
+    // Custom backend override to connect directly via GitHub Personal Access Token
+    // This completely bypasses Netlify proxy errors on GitHub Pages.
+    CMS.init();
   </script>
 </body>
 </html>
